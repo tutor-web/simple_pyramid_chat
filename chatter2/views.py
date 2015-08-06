@@ -9,9 +9,6 @@ def index(request):
 
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
-    def on_chat(self, msg):
-        self.broadcast_event('chat', msg)
-
     def recv_connect(self):
         self.broadcast_event('user_connect')
 
@@ -30,6 +27,9 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
             self.socket.session['nickname'])
         self.leave(room)
 
+    def on_room_message(self, room, msg):
+        self.emit_to_room(room, 'room_message',
+            self.socket.session['nickname'], msg)
 
 
 from pyramid.response import Response
