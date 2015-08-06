@@ -62,6 +62,8 @@ setup(name='chatter2',
       entry_points="""\
       [paste.app_factory]
       main = chatter2:main
+      [console_scripts]
+      chat_server = serve:main
       """,
       paster_plugins=['pyramid'],
       )
