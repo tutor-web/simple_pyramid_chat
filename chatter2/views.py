@@ -16,11 +16,19 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.broadcast_event('user_connect')
 
     def recv_disconnect(self):
-        self.broadcast_event('user_disconnect')
+        for namespaceRoom in self.session['rooms'].copy():
+            self.on_leave(namespaceRoom.replace(self.ns_name + '_', '', 1))
         self.disconnect(silent=True)
 
-    def on_join(self, channel):
-        self.join(channel)
+    def on_join(self, room):
+        self.emit_to_room(room, 'room_join',
+            self.socket.session['nickname'])
+        self.join(room)
+
+    def on_leave(self, room):
+        self.emit_to_room(room, 'room_leave',
+            self.socket.session['nickname'])
+        self.leave(room)
 
 
 
