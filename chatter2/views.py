@@ -1,3 +1,5 @@
+import random
+
 from socketio.namespace import BaseNamespace
 from socketio import socketio_manage
 from socketio.mixins import RoomsMixin, BroadcastMixin
@@ -10,7 +12,14 @@ def index(request):
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def recv_connect(self):
-        self.broadcast_event('user_connect')
+        # Assign them a nick, tell them what it is
+        self.socket.session['nickname'] = "user-%s" % random.randrange(1000, 9999)
+        self.socket.send_packet(dict(
+            type="event",
+            name="set_nick",
+            args=[self.socket.session['nickname']],
+            endpoint=self.ns_name,
+        ))
 
     def recv_disconnect(self):
         for namespaceRoom in self.session['rooms'].copy():
