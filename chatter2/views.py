@@ -12,8 +12,10 @@ def index(request):
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
     def recv_connect(self):
-        # Assign them a nick, tell them what it is
         self.socket.session['nickname'] = "user-%s" % random.randrange(1000, 9999)
+
+    def on_nick(self, nick):
+        self.socket.session['nickname'] = nick
         self.socket.send_packet(dict(
             type="event",
             name="set_nick",
