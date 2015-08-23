@@ -28,6 +28,14 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
             self.on_leave(namespaceRoom.replace(self.ns_name + '_', '', 1))
         self.disconnect(silent=True)
 
+    def on_session_start(self, room, remainingSeconds, maxSeconds):
+        self.emit_to_room(room, 'session_start',
+            remainingSeconds, maxSeconds)
+
+    def on_session_stop(self, room):
+        self.emit_to_room(room, 'session_stop',
+            self.socket.session['nickname'])
+
     def on_join(self, room):
         self.emit_to_room(room, 'room_join',
             self.socket.session['nickname'])
